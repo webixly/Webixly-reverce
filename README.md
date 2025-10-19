@@ -112,7 +112,7 @@ Contributions that enhance the educational value (improved documentation, safe l
 
 > A. (Aymen, Webixly), *Webixly Reverse Shell — Educational Cybersecurity Project*, GitHub repository, [https://github.com/webixly/Webixly-reverce](https://github.com/webixly/Webixly-reverce), 2025.
 
-Replace `2025` with the year of citation.
+ `2025` 
 
 ---
 
