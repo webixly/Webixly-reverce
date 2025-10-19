@@ -74,7 +74,7 @@ A *reverse shell* is a technique in which a target host initiates an outbound co
 * Uses newline-terminated JSON for message framing to avoid partial-read ambiguities.
 * Logs events using a structured logger (recommended).
 
-### Client (`windows_reverce.py`, `linux_reverce.py`, `client_example.py`)
+### Client (`windows_reverce.py`, `linux_reverce.py`)
 
 * Establishes an outbound TCP connection to the configured listener.
 * Sends framed JSON requests and reads framed JSON responses.
