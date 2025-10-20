@@ -2,3 +2,4 @@ argparse
 logging
 socket
 threading
+colorama
