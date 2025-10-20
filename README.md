@@ -1,184 +1,156 @@
-<!-- Badges (replace with real links if desired) -->
+# Listener V3 — Professional Reverse Shell Listener
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](#license)
-[![Language: Python](https://img.shields.io/badge/Language-Python-green.svg)](#project-structure)
-[![Status: Educational](https://img.shields.io/badge/Status-Educational-orange.svg)](#abstract)
+**WARNING — FOR LAB USE ONLY**
 
-# 🐍 Webixly Reverse Shell — Educational Cybersecurity Project
-
-**Author:** Aymen (Webixly)
-**Repository:** Webixly-Reverce
-**License:** MIT (see `LICENSE`)
-
----
-
-## 📚 Table of Contents
-
-1. [Abstract](#abstract)
-2. [Overview](#overview)
-3. [Project Structure](#project-structure)
-4. [Design & Implementation](#design--implementation)
-5. [Configuration (CHANGE IP)](#configuration-change-ip)
-6. [Usage (Lab / Controlled Environment Only)](#usage-lab--controlled-environment-only)
-7. [Defensive Guidance](#defensive-guidance)
-8. [Academic & Ethical Considerations](#academic--ethical-considerations)
-9. [Contribution & Citation](#contribution--citation)
-10. [License](#license)
-11. [Contact](#contact)
-
----
-
-## Abstract
-
-This repository contains a safe, educational simulation of the *reverse shell* concept intended for academic use and cybersecurity instruction. The implementation demonstrates basic client–server network mechanics while intentionally limiting functionality to a small set of predefined, non-destructive commands. The objective is to help students and researchers understand reverse-connection patterns and to illustrate defensive practices to mitigate their misuse.
-
-> ⚠️ **Warning:** This project is for authorized educational use only. Do **not** run or deploy these examples against systems or networks for which you do not have explicit permission. Unauthorized use is illegal and unethical.
+This repository contains `Listener_V3.py`, a professional-grade reverse shell listener intended for use in controlled laboratory environments, training, and authorized red-team exercises. This software is **not** designed for or authorized for use on systems for which you do not have explicit permission. Misuse may be illegal and unethical.
 
 ---
 
 ## Overview
 
-A *reverse shell* is a technique in which a target host initiates an outbound connection to an external listener, enabling command exchange over that channel. While used legitimately in penetration testing and red-team exercises, reverse shells are also abused by attackers. This repository models the connection pattern safely — the server executes only a whitelist of Python handlers (no arbitrary OS shell commands).
+`Listener_V3` is a polished and operator-friendly reverse shell listener written in Python 3. It focuses on reliable interactive sessions, multi-client management, and a clear operator UX. The listener collects command output without requiring an explicit end-of-output marker by using non-blocking reads and short idle detection windows.
+
+Key features
+
+* Colorful and concise terminal UI (powered by `colorama`).
+* Multi-client support (one handler thread per client).
+* No end-marker protocol (collects output via non-blocking I/O and select).
+* Optional pre-shared-token authentication (suitable for lab environments).
+* Rotating file logging to keep operational logs bounded.
+* Operator commands: `clients`, `select <id>`, `broadcast <cmd>`, `help`, `clear`, `exit`.
 
 ---
 
-## Project Structure
+## Requirements
 
-```
-.
-├── LICENSE
-├── README.md
-├── listner.py             # Server-side command dispatcher (listener)
-├── windows_reverce.py     # Example client for Windows (simulated)
-├── linux_reverce.py       # Example client for Linux (simulated)
+* Python 3.8 or later.
+* Python package: `colorama`.
 
-```
-
-> 🔧 Adjust filenames above to match your repository if they differ.
-
----
-
-## Design & Implementation
-
-### Server (listener / `listner.py`)
-
-* Listens for incoming TCP connections on a configurable address and port.
-* Accepts JSON-formatted requests such as:
-
-```json
-{"token": "<auth-token>", "cmd": "time", "args": {}}
-```
-
-* Validates an authentication token (optional but recommended).
-* Dispatches only to a predefined, safe set of handlers (e.g., `hello`, `time`, `sysinfo`).
-* Uses newline-terminated JSON for message framing to avoid partial-read ambiguities.
-* Logs events using a structured logger (recommended).
-
-### Client (`windows_reverce.py`, `linux_reverce.py`)
-
-* Establishes an outbound TCP connection to the configured listener.
-* Sends framed JSON requests and reads framed JSON responses.
-* Intended exclusively for demonstration in a controlled lab environment.
-
-### Security Decisions
-
-* **No arbitrary shell execution**: prevents the repository from becoming a fully functional remote shell.
-* **Message framing & size checks**: prevent partial-read issues and limit resource consumption.
-* **Optional TLS**: recommended for any use outside isolated labs (`ssl.wrap_socket` / `ssl.SSLContext`).
-* **Authentication token**: recommended to prevent unauthorized access in multi-user networks.
-
----
-
-## Configuration (CHANGE IP)
-
-> 🔁 **Important:** Before running any client (victim) script, you **must** update the target listener IP address (`HOST`) and, if used, the `PORT`. Failure to set the correct listener IP will cause the client to attempt to connect to the wrong host.
-
-Open the client script you intend to run (`windows_reverce.py`, `linux_reverce.py`) and locate the `HOST`/`PORT` variables near the top of the file. Example:
-
-```python
-# windows_reverce.py (example snippet)
-s.connect(("192.168.1.100", 4444))  #<<== Attacker's IP and Port 
-```
-
-**Steps**
-
-1. Find the `HOST` variable and replace the placeholder with your listener/server IP (e.g., `192.168.10.128`).
-2. Ensure `PORT` matches the port configured in `listner.py`.
-3. Save the file and transfer it only to your controlled lab machine (if testing across VMs).
-
-> 🔒 Tip: For lab automation, you can use environment variables instead of hardcoding:
-
-```python
-HOST = '192.168.10.128' # Attacker's IP address
-PORT = 4444 # Attacker's listening port
-```
-
-This allows running:
+Install dependencies using `pip`:
 
 ```bash
-REVERSE_HOST=192.168.10.128 REVERSE_PORT=4444 python3 windows_reverce.py
+pip install colorama
 ```
 
 ---
 
-## Usage (Lab / Controlled Environment Only)
+## Quick Start
 
-1. Create an isolated test environment (local VMs, isolated VLAN, or a single host with loopback testing).
-2. Start the listener (on the host where `listner.py` runs):
+1. Place `Listener_V3.py` in your working directory.
+2. Run the listener (default: binds to `0.0.0.0:4444`):
 
 ```bash
-pip install socket
-python3 listner.py
+python3 Listener_V3.py --host 0.0.0.0 --port 4444
 ```
 
-3. On the test client machine (after updating `HOST` to point to the listener):
+3. (Optional) Disable token authentication for quick testing (only in closed labs):
 
 ```bash
-pip install socket
-python3 windows_reverce.py
-# or
-pip install socket
-python3 linux_reverce.py
+python3 Listener_V3.py --no-auth
 ```
 
-> 🧪 Always operate within an environment you control. Do not run these scripts on production systems or public networks.
+4. On a cooperating client machine, run a compatible client that connects to the listener and executes received commands. A sample client script is provided in this project (or can be created to match the listener's expected behavior).
 
 ---
 
-## Defensive Guidance
+## Usage and Operator Commands
 
-System administrators, students, and researchers should adopt the following controls to reduce the risk of reverse-shell exploitation:
+Once the server is running, the operator is presented with a prompt `server>` and may use the following commands:
 
-* **Egress filtering:** restrict outbound connections by default; allow only required destinations and ports.
-* **Host hardening:** enforce least privilege, disable interpreters where unnecessary, and use application allowlisting.
-* **Network monitoring:** detect anomalous outbound connections (to uncommon ports or foreign hosts).
-* **Endpoint detection:** use EDR/NDR solutions to identify process behaviors consistent with reverse shells.
-* **Code review:** audit third-party and internal code for unsafe socket or subprocess usage.
+* `help` — Display help text and available commands.
+* `clients` — Show a numbered list of connected clients (ID, IP:port, status, uptime).
+* `select <id>` — Select a client session for interaction. All subsequent commands are sent to that client.
+* `broadcast <command>` — Send a command to all currently connected clients and display their outputs.
+* `clear` — Clear the operator console screen.
+* `info` — Show server status and basic metrics.
+* `exit` / `quit` — Shutdown the listener and close all connections.
+
+Example interactive session:
+
+```text
+server> clients
+[Clients]
+ # 1  10.10.10.20:53832    alive    connected 12s
+server> select 1
+Selected client #1 -> 10.10.10.20:53832
+server> whoami
+────────────────────────────────────────────────────────
+> OUTPUT — 2025-10-20 15:12:15
+  root
+────────────────────────────────────────────────────────
+```
 
 ---
 
-## Academic & Ethical Considerations
+## Client Requirements and Notes
 
-This repository is intended for coursework, labs, and research under authorized conditions. Any unauthorized testing, scanning, or exploitation of systems you do not own or have permission to test is illegal. If you discover a vulnerability during legitimate testing, follow established responsible disclosure procedures.
+A cooperating client must:
+
+* Connect to the listener's TCP socket.
+* Optionally respond to the `TOKEN?` prompt with the pre-shared token (if auth is enabled).
+* Read command lines sent by the listener (terminated by `\n`).
+* Execute the received commands in a local shell and send back `stdout` and `stderr` as raw bytes.
+
+**Important:** The server does not rely on an explicit end-of-output marker. Clients should send output in full and allow the server's idle-detection window to collect it. The sample client included with the project demonstrates the recommended behavior.
 
 ---
 
-## Contribution & Citation
+## Logging
 
-Contributions that enhance the educational value (improved documentation, safe lab exercises, additional safe handlers) are welcome via issues or pull requests. If you cite this repository in academic work, please reference:
+Operational logs are written to a rotating log file (`listener_v3.log` by default). The log captures connection events, errors, authentication attempts, and unsolicited client data. Log rotation is configured to preserve disk space.
 
-> A. (Aymen, Webixly), *Webixly Reverse Shell — Educational Cybersecurity Project*, GitHub repository, [https://github.com/webixly/Webixly-reverce](https://github.com/webixly/Webixly-reverce), 2025.
+---
+
+## Security and Legal Notice
+
+This code is intended strictly for use in environments where you have explicit authorization (e.g., lab networks, penetration testing engagements with written permission, or educational demonstrations). Unauthorized use against systems you do not own or have permission to test is illegal and unethical.
+
+If you plan to use this tool in a sensitive environment, consider the following hardening steps:
+
+* Wrap the TCP connection in TLS (use `ssl.wrap_socket`) and validate certificates.
+* Replace pre-shared token auth with mutual TLS or an authenticated tunnel (SSH/VPN).
+* Run the listener and clients over isolated networks or VLANs during experiments.
+* Keep logging and monitoring active; limit filesystem and log access to authorized operators.
+
+---
+
+## Deployment and Integration Guidance
+
+* Place `Listener_V3.py` under version control and maintain a changelog.
+* Use a separate branch for experimental changes; create a pull request to merge to the canonical branch.
+* If you plan to run the listener persistently on a controlled host, consider running it under a process supervisor (e.g., `systemd` or `supervisord`) and configure appropriate restart policies and resource limits.
+
+---
+
+## Contributing
+
+Contributions are welcome from authorized project collaborators. Follow standard Git workflows:
+
+1. Fork the repository.
+2. Create a descriptive branch (e.g., `feature/auto-reconnect-client`).
+3. Make small, focused commits with meaningful messages.
+4. Open a Pull Request and include tests or usage notes for new behavior.
+
+Note: Maintain strict control over features that increase the risk of misuse.
 
 ---
 
 ## License
 
-This project is offered under the **MIT License**. See the `LICENSE` file for full terms.
+This project does not include a license by default. If you intend to share this code publicly, add an appropriate license file (for example, an MIT or Apache 2.0 license) and ensure that the legal terms are compatible with your intended usage.
 
 ---
 
-## Contact
+## Contact and Support
 
-**Aymen (Webixly)**
-GitHub: [https://github.com/webixly](https://github.com/webixly)
-Email: [webiixly@gmail.com](mailto:webiixly@gmail.com)
+For assistance with integration or adapting the listener for your lab, open an issue in the repository or contact the project maintainer. Include your environment details (OS, Python version) and a short description of the problem.
+
+---
+
+## Change Log (high level)
+
+* **v3** — Professional UI, multi-client support, no end-marker, rotating logs, optional token auth.
+
+---
+
+*Prepared for controlled laboratory use. Do not use on unauthorized systems.*
