@@ -21,14 +21,14 @@ except Exception:
 
 colorama_init(autoreset=True)
 
-# ----- Defaults -----
+
 DEFAULT_HOST = "0.0.0.0"
 DEFAULT_PORT = 4444
 BUFFER_SIZE = 8192
 ENCODING = "utf-8"
-DEFAULT_TOKEN = "lab-secret-token"  # change per lab
+DEFAULT_TOKEN = "lab-secret-token"  
 LOG_FILE = "pro_reverse_shell.log"
-READ_IDLE_THRESHOLD = 0.35  # seconds without data -> consider finished
+READ_IDLE_THRESHOLD = 0.35  #
 SELECT_TIMEOUT = 0.12
 
 # ----- Logging setup -----
