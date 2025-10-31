@@ -72,8 +72,8 @@ Recommended lab environment:
 1. Clone the repository on the lab host or instructor machine.
 
 ```bash
-git clone <your-repo-url>
-cd <repo>
+git clone https://github.com/webixly/Webixly-reverce.git
+cd Webixly-reverce 
 ```
 
 2. Create a Python virtual environment and install dependencies:
